@@ -1,0 +1,1 @@
+from .currency_exchange_rate_scan import update_all_currency_ex_rates

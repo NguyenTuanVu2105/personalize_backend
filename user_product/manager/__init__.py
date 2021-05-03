@@ -1,0 +1,2 @@
+from .user_product_artwork_fusion import UserProductArtworkFusionManager
+from .artwork_fusion_info import ArtworkFusionInfoManager

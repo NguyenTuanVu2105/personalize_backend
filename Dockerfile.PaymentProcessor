@@ -1,0 +1,4 @@
+ARG BASE_IMAGE=pip-requirements-installed-image
+FROM ${BASE_IMAGE}:latest
+WORKDIR /app
+CMD python manage.py shell < worker_payment_processor/__main__.py

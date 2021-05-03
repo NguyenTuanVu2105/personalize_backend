@@ -1,0 +1,1 @@
+HMAC_FULFILL_WEBHOOK_REQUEST_HEADER = 'merchize-signature'

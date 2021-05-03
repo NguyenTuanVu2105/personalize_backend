@@ -1,0 +1,2 @@
+class DuplicateChargeException(Exception):
+    pass

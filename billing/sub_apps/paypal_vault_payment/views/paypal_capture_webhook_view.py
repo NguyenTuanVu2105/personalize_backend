@@ -1,0 +1,8 @@
+from billing.sub_apps.paypal_payment.views.base.paypal_webhook_view import PaypalWebhookView
+from billing.sub_apps.paypal_vault_payment.services.paypal_capture_webhook_services import PaypalCaptureWebhookService
+from service_communication.constants.incoming_webhook_types import IncomingWebhookType
+
+
+class PaypalCaptureWebhookView(PaypalWebhookView):
+    paypal_webhook_service = PaypalCaptureWebhookService
+    webhook_type = IncomingWebhookType.PAYPAL_CAPTURE_TRANSACTION_UPDATE

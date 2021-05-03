@@ -1,0 +1,1 @@
+from .user_payoneer_payment_method import UserPayoneerPaymentMethod

@@ -1,0 +1,33 @@
+import os
+
+# Shopify Adapter
+SHOPIFY_API_KEY = os.environ.get("SHOPIFY_API_KEY")
+SHOPIFY_API_SECRET_KEY = os.environ.get("SHOPIFY_API_SECRET_KEY")
+
+SHOPIFY_ADAPTER_HOST = os.environ.get("SHOPIFY_ADAPTER_HOST")
+
+SHOPIFY_ADAPTER_ORDER_LIST_API = f'{SHOPIFY_ADAPTER_HOST}/order/list'
+
+# Fulfillment
+FULFILLMENT_HOST = os.environ.get("FULFILLMENT_HOST")
+FULFILLMENT_API_KEY = os.environ.get("FULFILLMENT_API_KEY")
+
+# hub_client
+HUB_CLIENT = os.environ.get("CLIENT_URL")
+
+# Google Auth
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+
+# Currency Convert Setting
+CURRENCY_CONVERT_API_KEY = '0162ce4922826a5047e2'
+CURRENCY_CONVERT_API = "https://free.currconv.com/api/v7/convert?q={}&compact=ultra&apiKey=" + CURRENCY_CONVERT_API_KEY
+
+SHOPIFY_APP_UNINSTALL_VIA_HOOK_DELAY_IN_SEC = 10 * 60
+
+EASY_POST_API_KEY = os.environ.get("EASY_POST_API_KEY")
+CHECK_TRACKING_STATUS_IF_NOT_UPDATE_IN_MINUTE = 10
+CHECK_UNKNOWN_TRACKING_STATUS_IN_MINUTE = 12 * 60
+LIMIT_GET_ECOMERCE_PRODUCT = 250
+
+# Time to pass embedded request in second
+EMBEDDED_REQUEST_TIMEOUT = 60

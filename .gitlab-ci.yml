@@ -1,0 +1,86 @@
+image: docker:latest
+services:
+  - docker:17-dind
+
+stages:
+  - build_base_images
+  - build_service_images
+  - deploy
+
+variables:
+  CONTAINER_IMAGE_BASE: $CI_REGISTRY/$CI_PROJECT_PATH/base
+  CONTAINER_IMAGE_BACKEND: $CI_REGISTRY/$CI_PROJECT_PATH/backend
+  CONTAINER_IMAGE_CELERY_BEAT: $CI_REGISTRY/$CI_PROJECT_PATH/celery-beat
+  CONTAINER_IMAGE_CELERY_WORKER: $CI_REGISTRY/$CI_PROJECT_PATH/celery-worker
+  CONTAINER_IMAGE_PAYMENT_PROCESSOR: $CI_REGISTRY/$CI_PROJECT_PATH/payment-processor
+  DOCKER_DRIVER: overlay
+
+build_base:
+  stage: build_base_images
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker pull $CONTAINER_IMAGE_BASE:latest || true
+    - docker build -f Dockerfile.Base --cache-from $CONTAINER_IMAGE_BASE:latest -t $CONTAINER_IMAGE_BASE:$CI_BUILD_REF -t $CONTAINER_IMAGE_BASE:latest .
+    - docker push $CONTAINER_IMAGE_BASE:$CI_BUILD_REF
+    - docker push $CONTAINER_IMAGE_BASE:latest
+  only:
+    - master
+
+build_backend:
+  stage: build_service_images
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker pull $CONTAINER_IMAGE_BACKEND:latest || true
+    - docker build -f Dockerfile.Web --build-arg BASE_IMAGE=$CONTAINER_IMAGE_BASE -t $CONTAINER_IMAGE_BACKEND:$CI_BUILD_REF -t $CONTAINER_IMAGE_BACKEND:latest .
+    - docker push $CONTAINER_IMAGE_BACKEND:$CI_BUILD_REF
+    - docker push $CONTAINER_IMAGE_BACKEND:latest
+  only:
+    - master
+build_celery_worker:
+  stage: build_service_images
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker pull $CONTAINER_IMAGE_CELERY_WORKER:latest || true
+    - docker build -f Dockerfile.CeleryWorker --build-arg BASE_IMAGE=$CONTAINER_IMAGE_BASE -t $CONTAINER_IMAGE_CELERY_WORKER:$CI_BUILD_REF -t $CONTAINER_IMAGE_CELERY_WORKER:latest .
+    - docker push $CONTAINER_IMAGE_CELERY_WORKER:$CI_BUILD_REF
+    - docker push $CONTAINER_IMAGE_CELERY_WORKER:latest
+  only:
+    - master
+
+build_celery_beat:
+  stage: build_service_images
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker pull $CONTAINER_IMAGE_CELERY_BEAT:latest || true
+    - docker build -f Dockerfile.CeleryBeat --build-arg BASE_IMAGE=$CONTAINER_IMAGE_BASE -t $CONTAINER_IMAGE_CELERY_BEAT:$CI_BUILD_REF -t $CONTAINER_IMAGE_CELERY_BEAT:latest .
+    - docker push $CONTAINER_IMAGE_CELERY_BEAT:$CI_BUILD_REF
+    - docker push $CONTAINER_IMAGE_CELERY_BEAT:latest
+  only:
+    - master
+
+build_payment_processor:
+  stage: build_service_images
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker pull $CONTAINER_IMAGE_PAYMENT_PROCESSOR:latest || true
+    - docker build -f Dockerfile.PaymentProcessor --build-arg BASE_IMAGE=$CONTAINER_IMAGE_BASE -t $CONTAINER_IMAGE_PAYMENT_PROCESSOR:$CI_BUILD_REF -t $CONTAINER_IMAGE_PAYMENT_PROCESSOR:latest .
+    - docker push $CONTAINER_IMAGE_PAYMENT_PROCESSOR:$CI_BUILD_REF
+    - docker push $CONTAINER_IMAGE_PAYMENT_PROCESSOR:latest
+  only:
+    - master
+deploy_prod:
+  stage: deploy
+  image: google/cloud-sdk:alpine
+  environment:
+    name: production
+  before_script:
+    - echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+    - gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
+    - gcloud components install kubectl
+    - gcloud container clusters get-credentials production --zone us-central1-b --project uetfulfillmenthub
+    - kubectl cluster-info
+  script:
+    - apk add gettext
+    - envsubst < deployment/k8s-prod/deployment.yaml | kubectl apply --namespace=$PRODUCTION_KUBE_NAMESPACE -f -
+  only:
+    - master

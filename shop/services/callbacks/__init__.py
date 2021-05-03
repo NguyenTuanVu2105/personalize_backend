@@ -1,0 +1,1 @@
+from .check_shop_location_callbacks import *

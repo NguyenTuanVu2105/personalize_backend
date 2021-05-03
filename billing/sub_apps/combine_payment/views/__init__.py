@@ -1,0 +1,1 @@
+from .general_payment_method import GeneralMethodViewSet

@@ -1,0 +1,1 @@
+from .renew_instant_prompt import renew_instant_prompt

@@ -1,0 +1,42 @@
+import os
+
+PAYPAL_TEST = os.environ.get("PAYPAL_TEST") == 'TRUE'
+PAYPAL_BUSINESS_EMAIL = os.environ.get("PAYPAL_BUSINESS_EMAIL")
+
+# Stripe Payment Dev
+STRIPE_PK_KEY = os.environ.get("STRIPE_PK_KEY")
+STRIPE_SK_KEY = os.environ.get("STRIPE_SK_KEY")
+
+# Braintree paypal settings
+BRAINTREE_ENVIRONMENT = os.environ.get("BRAINTREE_ENVIRONMENT")
+BRAINTREE_MERCHANT_ID = os.environ.get("BRAINTREE_MERCHANT_ID")
+BRAINTREE_PUBLIC_KEY = os.environ.get("BRAINTREE_PUBLIC_KEY")
+BRAINTREE_PRIVATE_KEY = os.environ.get("BRAINTREE_PRIVATE_KEY")
+
+# Expired email confirmation time by seconds
+EXPIRED_EMAIL_TIME = 60 * 60 * 24
+
+# Expired forgot password time by seconds
+EXPIRED_FORGOT_PASSWORD_TOKEN_TIME = 900
+
+# Time to send a failed payment notifications
+TIME_TO_SEND_FAILED_PAYMENT_NOTIFICATIONS = 24 * 60 * 60
+
+# RECAPTCHA
+RECAPTCHA_SITE_KEY = os.environ.get("RECAPTCHA_SITE_KEY")
+RECAPTCHA_SECRET_KEY = os.environ.get("RECAPTCHA_SECRET_KEY")
+
+PRODUCT_VENDOR_NAME = os.environ.get("PRODUCT_VENDOR_NAME")
+
+PAYONEER_USERNAME = os.environ.get("PAYONEER_USERNAME")
+PAYONEER_PASSWORD = os.environ.get("PAYONEER_PASSWORD")
+PAYONEER_PROGRAM_ID = os.environ.get("PAYONEER_PROGRAM_ID")
+PAYONEER_HOST = os.environ.get("PAYONEER_HOST")
+PAYONEER_LOGIN_REDIRECT_URL = os.environ.get("PAYONEER_LOGIN_REDIRECT_URL")
+
+PAYPAL_APP_API_V1 = os.environ.get("PAYPAL_APP_API_V1")
+PAYPAL_APP_API_V2 = os.environ.get("PAYPAL_APP_API_V2")
+PAYPAL_APP_CLIENT_ID = os.environ.get("PAYPAL_APP_CLIENT_ID")
+PAYPAL_APP_SECRET_KEY = os.environ.get("PAYPAL_APP_SECRET_KEY")
+
+MAX_PAYMENT_METHODS_PER_PAYMENT_GATEWAY = 2

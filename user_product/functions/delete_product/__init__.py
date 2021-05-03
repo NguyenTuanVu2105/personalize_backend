@@ -1,0 +1,1 @@
+from .generate_data_for_delete_adapter import generate_data_for_delete_adapter

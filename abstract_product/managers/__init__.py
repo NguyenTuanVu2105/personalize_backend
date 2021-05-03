@@ -1,0 +1,1 @@
+from .abstract_product import AbstractProductManager

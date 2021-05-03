@@ -1,0 +1,5 @@
+ARG BASE_IMAGE=pip-requirements-installed-image
+FROM ${BASE_IMAGE}:latest
+COPY docker-run.sh /code/docker-run.sh
+WORKDIR /app
+CMD ./docker-run.sh

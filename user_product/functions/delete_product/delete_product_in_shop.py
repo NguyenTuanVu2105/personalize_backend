@@ -1,0 +1,7 @@
+from service_communication.services.adapter_services import AdapterProductCommunicationService
+from user_product.functions import generate_data_for_delete_adapter
+
+
+def delete_product_in_shop(shop_user_product):
+    request_shopify_data = generate_data_for_delete_adapter(shop_user_product.shop)
+    AdapterProductCommunicationService.delete_product(shop_user_product, request_shopify_data)

@@ -1,0 +1,83 @@
+class MessageType:
+    CANCEL_SHIPPING_APPROVED = "0"
+    CANCEL_SHIPPING_REJECTED = "1"
+    REGISTRATION_ACTIVATION_EMAIL = "2"
+    ADD_PAYMENT_PROMPT = "3"
+    RECHARGE_NOTIFICATION = "4"
+    CANCEL_ORDER_SUCCESS = "5"
+    CANCEL_ORDER_SUCCESS_SHOP_OWNER = "6"
+    ORDER_REJECTED = "7"
+    ORDER_REJECTED_SHOP_OWNER = "8"
+    SELLER_ORDER_CONTACT_SUPPORT = "9"
+    ADMIN_REFUND_FAILED = "11"
+    ADMIN_LONG_INVOICE_PROCESSING = "12"
+    FORGOT_PASSWORD_EMAIL = "13"
+    TICKET_RESOLVED = "14"
+    USER_PRODUCT_DELETE = "15"
+    ORDER_SHIPPING_ADDRESS_UPDATE_REJECTED = "16"
+    CREATE_ACCOUNT_BY_EMAIL = "17"
+    ORDER_SHIPPING_NOTIFICATION = '18'
+    ORDER_DELIVERED_NOTIFICATION = '19'
+    WARNING_AUTHENICATION = '20'
+    WELCOME_USER = '21'
+    UNPROFITABLE_ORDER_NOTIFICATION = '22'
+    ORDER_DELIVERED_REVIEW = '23'
+    ADD_PAYMENT_EMAIL = '24'
+
+
+class VerboseMessageType:
+    CANCEL_SHIPPING_APPROVED = "cancel_shipping_approved"
+    CANCEL_SHIPPING_REJECTED = "cancel_shipping_rejected"
+    REGISTRATION_ACTIVATION_EMAIL = "registration_activation_email"
+    ADD_PAYMENT_PROMPT = "add_payment_prompt"
+    RECHARGE_NOTIFICATION = "recharge_notification"
+    CANCEL_ORDER_SUCCESS = "cancel_order_success"
+    CANCEL_ORDER_SUCCESS_SHOP_OWNER = "cancel_order_success_shop_owner"
+    ORDER_REJECTED = "order_rejected"
+    ORDER_REJECTED_SHOP_OWNER = "order_rejected_shop_owner"
+    SELLER_ORDER_CONTACT_SUPPORT = "seller_order_contact_support"
+    ADMIN_REFUND_FAILED = "admin_refund_failed"
+    ADMIN_LONG_INVOICE_PROCESSING = "admin_long_invoice_processing"
+    FORGOT_PASSWORD_EMAIL = "forgot_password_email"
+    TICKET_RESOLVED = "ticket_resolved"
+    USER_PRODUCT_DELETE = "user_product_delete"
+    ORDER_SHIPPING_ADDRESS_UPDATE_REJECTED = "order_shipping_address_update_rejected"
+    CREATE_ACCOUNT_BY_EMAIL = "create_account_by_email"
+    ORDER_SHIPPING_NOTIFICATION = 'order_shipping_notification'
+    ORDER_DELIVERED_NOTIFICATION = 'order_delivered_notification'
+    WARNING_AUTHENICATION = 'warning_authenication'
+    WELCOME_USER = 'welcome_user'
+    UNPROFITABLE_ORDER_NOTIFICATION = 'unprofitable_order'
+    ORDER_DELIVERED_REVIEW = 'order_delivered_review'
+    ADD_PAYMENT_EMAIL = 'add_payment_email'
+
+
+MESSAGE_TYPES = [
+    (MessageType.CANCEL_SHIPPING_APPROVED, VerboseMessageType.CANCEL_SHIPPING_APPROVED),
+    (MessageType.CANCEL_SHIPPING_REJECTED, VerboseMessageType.CANCEL_SHIPPING_REJECTED),
+    (MessageType.REGISTRATION_ACTIVATION_EMAIL, VerboseMessageType.REGISTRATION_ACTIVATION_EMAIL),
+    (MessageType.ADD_PAYMENT_PROMPT, VerboseMessageType.ADD_PAYMENT_PROMPT),
+    (MessageType.RECHARGE_NOTIFICATION, VerboseMessageType.RECHARGE_NOTIFICATION),
+    (MessageType.CANCEL_ORDER_SUCCESS, VerboseMessageType.CANCEL_ORDER_SUCCESS),
+    (MessageType.CANCEL_ORDER_SUCCESS_SHOP_OWNER, VerboseMessageType.CANCEL_ORDER_SUCCESS_SHOP_OWNER),
+    (MessageType.ORDER_REJECTED, VerboseMessageType.ORDER_REJECTED),
+    (MessageType.ORDER_REJECTED_SHOP_OWNER, VerboseMessageType.ORDER_REJECTED_SHOP_OWNER),
+    (MessageType.SELLER_ORDER_CONTACT_SUPPORT, VerboseMessageType.SELLER_ORDER_CONTACT_SUPPORT),
+    (MessageType.ADMIN_REFUND_FAILED, VerboseMessageType.ADMIN_REFUND_FAILED),
+    (MessageType.ADMIN_LONG_INVOICE_PROCESSING, VerboseMessageType.ADMIN_LONG_INVOICE_PROCESSING),
+    (MessageType.FORGOT_PASSWORD_EMAIL, VerboseMessageType.FORGOT_PASSWORD_EMAIL),
+    (MessageType.TICKET_RESOLVED, VerboseMessageType.TICKET_RESOLVED),
+    (MessageType.USER_PRODUCT_DELETE, VerboseMessageType.USER_PRODUCT_DELETE),
+    (MessageType.ORDER_SHIPPING_ADDRESS_UPDATE_REJECTED, VerboseMessageType.ORDER_SHIPPING_ADDRESS_UPDATE_REJECTED),
+    (MessageType.CREATE_ACCOUNT_BY_EMAIL, VerboseMessageType.CREATE_ACCOUNT_BY_EMAIL),
+    (MessageType.ORDER_SHIPPING_NOTIFICATION, VerboseMessageType.ORDER_SHIPPING_NOTIFICATION),
+    (MessageType.ORDER_DELIVERED_NOTIFICATION, VerboseMessageType.ORDER_DELIVERED_NOTIFICATION),
+    (MessageType.WARNING_AUTHENICATION, VerboseMessageType.WARNING_AUTHENICATION),
+    (MessageType.WELCOME_USER, VerboseMessageType.WELCOME_USER),
+    (MessageType.UNPROFITABLE_ORDER_NOTIFICATION, VerboseMessageType.UNPROFITABLE_ORDER_NOTIFICATION),
+    (MessageType.ORDER_DELIVERED_REVIEW, VerboseMessageType.ORDER_DELIVERED_REVIEW),
+    (MessageType.ADD_PAYMENT_EMAIL, VerboseMessageType.ADD_PAYMENT_EMAIL)
+]
+
+MESSAGE_TYPE_VERBOSE_DICT = {verbose: status for status, verbose in MESSAGE_TYPES}
+MESSAGE_TYPE_DO_NOT_CLEAR = [MessageType.ORDER_DELIVERED_REVIEW, MessageType.ADD_PAYMENT_EMAIL]

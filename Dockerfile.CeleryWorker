@@ -1,0 +1,4 @@
+ARG BASE_IMAGE=pip-requirements-installed-image
+FROM ${BASE_IMAGE}:latest
+WORKDIR /app
+CMD celery -A HUB worker --pool=gevent --concurrency=100 --loglevel=info

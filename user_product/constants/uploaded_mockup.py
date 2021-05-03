@@ -1,0 +1,1 @@
+TIME_TO_DELETE_UNUSED_MOCKUPS = 24 * 60 * 60  # in seconds

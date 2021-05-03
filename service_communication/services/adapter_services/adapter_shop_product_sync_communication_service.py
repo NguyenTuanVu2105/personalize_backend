@@ -1,0 +1,11 @@
+import logging
+
+from service_communication.services.webhook_job_services import WebhookJobService
+from .adapter_product_communication_service import AdapterProductCommunicationService
+from service_communication.constants.webhook_job_queue_ids import WebhookJobQueueID
+
+logger = logging.getLogger(__name__)
+
+
+class AdapterShopProductSyncCommunicationService(AdapterProductCommunicationService):
+    webhook_job_service = WebhookJobService(queue_id=WebhookJobQueueID.EX_ADAPTER_SHOP_USER_PRODUCT_FROM_OTHERS)

@@ -1,0 +1,2 @@
+from .google_authentication import GAuthenticationForm
+from .forgot_password import ForgotPasswordForm

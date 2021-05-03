@@ -1,0 +1,383 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: fulfillment-hub-backend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: fulfillment-hub-backend
+        tier: backend
+        track: stable
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - fulfillment-hub-backend
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: fulfillment-hub-backend
+          image: registry.gitlab.com/uetfulfillmenthub/fulfillment-hub-backend/backend:${CI_COMMIT_SHA}
+          envFrom:
+            - configMapRef:
+                name: fulfillment-hub-backend-config
+          ports:
+            - containerPort: 8000
+              name: backend
+      imagePullSecrets:
+        - name: gitlab-registry
+  selector:
+    matchLabels:
+      app: fulfillment-hub-backend
+      tier: backend
+      track: stable
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: leader-election-celery-beat
+  namespace: default
+  labels:
+    app: leader-election-celery-beat
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: leader-election-celery-beat
+  labels:
+    app: leader-election-celery-beat
+rules:
+  - apiGroups: [""]
+    resources: ["endpoints"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: leader-election-celery-beat
+  labels:
+    app: leader-election-celery-beat
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: leader-election-celery-beat
+subjects:
+  - name: leader-election-celery-beat
+    namespace: default
+    kind: ServiceAccount
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: fulfillment-hub-celery-worker
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: fulfillment-hub-celery-worker
+        tier: celery-worker
+        track: stable
+    spec:
+      serviceAccountName: leader-election-celery-beat
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - fulfillment-hub-celery-worker
+              topologyKey: "kubernetes.io/hostname"
+      terminationGracePeriodSeconds: 180
+      containers:
+        - name: fulfillment-hub-celery-worker
+          image: registry.gitlab.com/uetfulfillmenthub/fulfillment-hub-backend/celery-worker:${CI_COMMIT_SHA}
+          envFrom:
+            - configMapRef:
+                name: fulfillment-hub-backend-config
+
+      imagePullSecrets:
+        - name: gitlab-registry
+  selector:
+    matchLabels:
+      app: fulfillment-hub-celery-worker
+      tier: celery-worker
+      track: stable
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: fulfillment-hub-celery-beat
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: fulfillment-hub-celery-beat
+        tier: celery-beat
+        track: stable
+    spec:
+      serviceAccountName: leader-election-celery-beat
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - fulfillment-hub-celery-beat
+              topologyKey: "kubernetes.io/hostname"
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: fulfillment-hub-celery-beat
+          image: registry.gitlab.com/uetfulfillmenthub/fulfillment-hub-backend/celery-beat:${CI_COMMIT_SHA}
+          envFrom:
+            - configMapRef:
+                name: fulfillment-hub-backend-config
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+        - name: leader-election-celery-beat
+          image: gcr.io/google_containers/leader-elector:0.5
+          args:
+            - --election=celery-beat
+            - --http=0.0.0.0:4040
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4040
+
+      imagePullSecrets:
+        - name: gitlab-registry
+  selector:
+    matchLabels:
+      app: fulfillment-hub-celery-beat
+      tier: celery-beat
+      track: stable
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: fulfillment-hub-payment-processor
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: fulfillment-hub-payment-processor
+        tier: payment-processor
+        track: stable
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - fulfillment-hub-payment-processor
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: fulfillment-hub-payment-processor
+          image: registry.gitlab.com/uetfulfillmenthub/fulfillment-hub-backend/payment-processor:${CI_COMMIT_SHA}
+          envFrom:
+            - configMapRef:
+                name: fulfillment-hub-backend-config
+      imagePullSecrets:
+        - name: gitlab-registry
+  selector:
+    matchLabels:
+      app: fulfillment-hub-payment-processor
+      tier: payment-processor
+      track: stable
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: fulfillment-hub-backend
+spec:
+  type: ClusterIP
+  selector:
+    app: fulfillment-hub-backend
+    tier: backend
+  ports:
+    - name: backend
+      protocol: TCP
+      port: 8000
+      targetPort: backend
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rewrite-target: /api/v1/$1
+  name: fulfillment-hub-backend-ingress
+spec:
+  rules:
+    - host: api.printholo.com
+      http:
+        paths:
+          - backend:
+              serviceName: fulfillment-hub-backend
+              servicePort: backend
+            path: /api/v1/(.*)
+  tls:
+    - hosts:
+        - api.printholo.com
+      secretName: api-printholo-com-tls
+
+
+# For internal webhook
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: fulfillment-hub-internal-backend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: fulfillment-hub-internal-backend
+        tier: backend
+        track: stable
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - fulfillment-hub-internal-backend
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: fulfillment-hub-backend
+          image: registry.gitlab.com/uetfulfillmenthub/fulfillment-hub-backend/backend:${CI_COMMIT_SHA}
+          envFrom:
+            - configMapRef:
+                name: fulfillment-hub-backend-config
+          ports:
+            - containerPort: 8000
+              name: backend
+      imagePullSecrets:
+        - name: gitlab-registry
+  selector:
+    matchLabels:
+      app: fulfillment-hub-internal-backend
+      tier: backend
+      track: stable
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: fulfillment-hub-internal-backend
+spec:
+  type: ClusterIP
+  selector:
+    app: fulfillment-hub-internal-backend
+    tier: backend
+  ports:
+    - name: backend
+      protocol: TCP
+      port: 8000
+      targetPort: backend
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rewrite-target: /internal/$1
+  name: fulfillment-hub-backend-internal-ingress
+spec:
+  rules:
+    - host: internal.printholo.com
+      http:
+        paths:
+          - backend:
+              serviceName: fulfillment-hub-internal-backend
+              servicePort: backend
+            path: /internal/(.*)
+  tls:
+    - hosts:
+        - internal.printholo.com
+      secretName: internal-printholo-com-tls
+
+# ---
+# apiVersion: autoscaling/v2beta1
+# kind: HorizontalPodAutoscaler
+# metadata:
+#   name: product-service-${NAMESPACE}
+#   namespace: ${NAMESPACE}
+# spec:
+#   scaleTargetRef:
+#     apiVersion: extensions/v1beta1
+#     kind: Deployment
+#     name: product-service-${NAMESPACE}
+#   minReplicas: 2
+#   maxReplicas: 10
+#   metrics:
+#     - type: Resource
+#       resource:
+#         name: memory
+#         targetAverageValue: 100Mi
+#     - type: Resource
+#       resource:
+#         name: cpu
+#         targetAverageUtilization: 90
+# ---
+# apiVersion: policy/v1beta1
+# kind: PodDisruptionBudget
+# metadata:
+#   name: product-service-${NAMESPACE}-pdb
+#   namespace: ${NAMESPACE}
+# spec:
+#   maxUnavailable: 1
+#   selector:
+#     matchLabels:
+#       app: product-service

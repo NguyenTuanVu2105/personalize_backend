@@ -1,0 +1,1 @@
+IGNORE_QUERY_ECOMMERCES = ["PrintHolo"]

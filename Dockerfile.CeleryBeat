@@ -1,0 +1,7 @@
+ARG BASE_IMAGE=pip-requirements-installed-image
+FROM ${BASE_IMAGE}:latest
+WORKDIR /app
+
+RUN rm -f celerybeat-schedule
+
+CMD celery -A HUB beat --scheduler HUB.celery_modules.celery_scheduler:CustomPersistentScheduler --loglevel=info --pidfile=
