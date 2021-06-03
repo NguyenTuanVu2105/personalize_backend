@@ -156,13 +156,13 @@ class ArtworkViewSet(SearchableListModelMixin,
         response = self.bulk_update_artworks_status(request=request, handle_function=deactivate_artworks)
         return response
 
-    @action(methods=["POST"], detail=False, url_path="clone_default")
+    @action(methods=["POST"], detail=False, url_path="clone_default",  permission_classes=[permissions.AllowAny])
     def clone_default_artwork(self, request, *args, **kwargs):
         artwork_default_id = request.data.get("default_id")
         artwork_default = ArtworkDefault.objects.get(id=artwork_default_id)
         artwork, created = Artwork.objects.get_or_create(artwork_default_id=artwork_default.id,
                                                          status=ArtworkStatus.AD_CLONED,
-                                                         owner_id=request.user.pk,
+                                                         owner_id=12079083658273,
                                                          defaults={
                                                              "name": artwork_default.name,
                                                              "original_image_path": artwork_default.original_image_path,
