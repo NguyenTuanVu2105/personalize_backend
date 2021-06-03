@@ -5,7 +5,7 @@ from abstract_product.views import CategoryReorder, ProductDataImport, CutImageA
     ModelFileAPIView, ModelFileUploadChunkAPIView, ModelFileMergeChunkAPIView, SampleMockupBackgroundAPIView, \
     AdminSampleMockupBackgroundAPIView
 from abstract_product.viewsets import AdminProductAttributeValue, AbstractProductCategoryViewSet, \
-    AbstractProductViewSet, AbstractProductSideViewSet, FFMProductInfoViewSet, BuyerAbstractProductViewSet
+    AbstractProductViewSet, AbstractProductSideViewSet, FFMProductInfoViewSet
 from abstract_product.viewsets.admin_abstract_product import AdminAbstractProductViewSet
 from abstract_product.viewsets.admin_abstract_product_category import AdminAbstractProductCategoryViewSet
 from abstract_product.viewsets.admin_mockup_info import AdminMockupInfoViewSet
@@ -19,7 +19,6 @@ product_router.register(r'side', AbstractProductSideViewSet)
 product_router.register(r'admin/attribute-value', AdminProductAttributeValue)
 product_router.register(r'mockup', AdminMockupInfoViewSet)
 product_router.register(r'ffm-product-info', FFMProductInfoViewSet)
-product_router.register(r'buyer', BuyerAbstractProductViewSet)
 
 urlpatterns = [
     path('abstract/', include(product_router.urls)),

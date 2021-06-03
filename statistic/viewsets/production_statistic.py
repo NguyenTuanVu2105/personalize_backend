@@ -15,10 +15,13 @@ from statistic.models import AbstractProductStatistic
 from statistic.serializers.product_statistic_serializers import ProductStatisticSerializer
 from statistic.functions.update_from_dict import update_production_statistics
 from statistic.functions.import_from_csv import import_production_statistic_from_csv
-
+from rest_framework import permissions
 
 class ProductStatisticViewSet(CreateModelMixin, UpdateModelMixin, DestroyModelMixin,
                               ListModelMixin, AuthenticatedGenericViewSet):
+    permission_classes = [
+        permissions.AllowAny  # Or anon users can't register
+    ]
     queryset = AbstractProductStatistic.objects.order_by('sort_index').order_by('id')
     serializer_class = ProductStatisticSerializer
 

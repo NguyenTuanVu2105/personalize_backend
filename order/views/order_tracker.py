@@ -20,7 +20,7 @@ class OrderTrackerViewSet(GenericViewSet):
         try:
             tracker = OrderTracker.objects.filter(tracking_code=tracking_code).first()
             payloads = tracker.payloads
-            if payloads['data']:
+            if 'data' in payloads:
                 return Response(tracker.payloads)
             else:
                 return Response({"success": True, "data": tracker.payloads})

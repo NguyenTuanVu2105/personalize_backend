@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from HUB.caches import get_cached_object
-from HUB.viewsets.base import AuthenticatedGenericViewSet
+from HUB.viewsets.base import GenericViewSet
 from HUB.viewsets.mixins.search_mixins import SearchableListModelMixin
 from abstract_product.constants import ABSTRACT_PRODUCT_PRICING_CACHE_KEY_PREFIX, \
     ABSTRACT_PRODUCT_CACHE_TIMEOUT
@@ -14,14 +14,18 @@ from abstract_product.functions import retrieve_product_pricing, retrieve_abstra
 from abstract_product.serializers.brief_abstract_product import BriefAbstractProductSerializer
 from abstract_product.tasks import cache_object_if_not_exist_task
 from ..models import AbstractProduct
+from rest_framework import permissions
 
 logger = logging.getLogger(__name__)
 
 
 class AbstractProductViewSet(SearchableListModelMixin,
                              mixins.RetrieveModelMixin,
-                             AuthenticatedGenericViewSet):
+                             GenericViewSet):
     queryset = AbstractProduct.objects.active_visible_filter()
+    permission_classes = [
+        permissions.AllowAny  # Or anon users can't register
+    ]
     serializer_class = BriefAbstractProductSerializer
     filter_backends = (filters.OrderingFilter, django_filters.rest_framework.DjangoFilterBackend)
     filterset_fields = ['title', 'categories', 'type']
@@ -52,3 +56,8 @@ class AbstractProductViewSet(SearchableListModelMixin,
         logger.exception(
             f"Loading Variants Failed: {product.id} - {product.title}. User: {user.pk} - {user.email}. {message}")
         return Response({})
+
+    @action(methods=["GET"], detail=False, url_path="get_default")
+    def get_default(self, request, *args, **kwargs):
+        product_id = str(self.queryset.filter(title="Unisex Classic T-shirt").first().id)
+        return Response({"id": product_id})

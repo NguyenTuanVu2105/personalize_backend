@@ -43,7 +43,7 @@ def create_service_communication_log_async(request_type,
                                            ):
     try:
         if related_object:
-            content_type_id = ContentType.objects.get_for_model(related_object).id,
+            content_type_id = ContentType.objects.get_for_model(related_object).id
             object_id = related_object.id
         else:
             content_type_id = None

@@ -4,12 +4,12 @@ from rest_framework import mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from HUB.viewsets.base import AuthenticatedGenericViewSet
+from HUB.viewsets.base import AuthenticatedGenericViewSet, GenericViewSet
 from notification.enums.message_statuses import MessageStatus
 from notification.models import Message, InstantPrompt
 from notification.serializers.message import MessageSerializer
 from notification.services import set_num_unread_msg, get_num_unread_msg
-
+from rest_framework import permissions
 logger = logging.getLogger(__name__)
 
 
@@ -17,6 +17,9 @@ class MessageViewSet(mixins.ListModelMixin,
                      AuthenticatedGenericViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    permission_classes = [
+        permissions.AllowAny  # Or anon users can't register
+    ]
 
     def get_queryset(self):
         return self.queryset.filter(owner=self.request.user.pk)

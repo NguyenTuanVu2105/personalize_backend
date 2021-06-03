@@ -26,6 +26,7 @@ class RequestType:
     ADAPTER_CHECK_SHOP_LOCATION = "24"
     PAYMENT_PAYPAL_REQUEST = "25"
     PAYMENT_PAYONEER_CHARGE = "26"
+    ADAPTER_CREATE_CUSTOMIZE_PAGE = "27"
 
 
 class VerboseRequestType:
@@ -55,6 +56,7 @@ class VerboseRequestType:
     ADAPTER_CHECK_SHOP_LOCATION = "adapter_check_shop_location"
     PAYMENT_PAYPAL_REQUEST = "payment_paypal_request"
     PAYMENT_PAYONEER_CHARGE = "payment_payoneer_charge"
+    ADAPTER_CREATE_CUSTOMIZE_PAGE = "adapter_create_customize_page"
 
 
 REQUEST_TYPES = [
@@ -83,7 +85,8 @@ REQUEST_TYPES = [
     (RequestType.FULFILL_SHIPPING_STATISTICS, VerboseRequestType.FULFILL_SHIPPING_STATISTICS),
     (RequestType.ADAPTER_CHECK_SHOP_LOCATION, VerboseRequestType.ADAPTER_CHECK_SHOP_LOCATION),
     (RequestType.PAYMENT_PAYPAL_REQUEST, VerboseRequestType.PAYMENT_PAYPAL_REQUEST),
-    (RequestType.PAYMENT_PAYONEER_CHARGE, VerboseRequestType.PAYMENT_PAYONEER_CHARGE)
+    (RequestType.PAYMENT_PAYONEER_CHARGE, VerboseRequestType.PAYMENT_PAYONEER_CHARGE),
+    (RequestType.ADAPTER_CREATE_CUSTOMIZE_PAGE, VerboseRequestType.ADAPTER_CREATE_CUSTOMIZE_PAGE)
 ]
 
 REQUEST_TYPES_LIST = [[verbose, code] for code, verbose in REQUEST_TYPES]

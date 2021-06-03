@@ -5,11 +5,13 @@ from HUB.exceptions.FormValidationError import FormValidationError
 from HUB.viewsets.base import BaseGenericAPIView
 from user_product.forms import ArtworkCheckForm
 from ..models import Artwork
+from rest_framework import permissions
 
 User = get_user_model()
 
 
 class ArtworkCheckView(BaseGenericAPIView):
+    permission_classes = [permissions.AllowAny]
     error_messages = {
         "artwork": {
             "invalid": "This artwork is invalid",

@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class AdapterBaseCommunicationService(AbstractCommunicationService):
-    HOST = settings.SHOPIFY_ADAPTER_HOST
+    HOST = "http://{}:3000".format(settings.SHOPIFY_ADAPTER_HOST)
     ENDPOINTS = {
 
     }

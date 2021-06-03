@@ -11,13 +11,14 @@ from user_product.models import Artwork
 from user_product.services.artwork import save_artwork
 from ..constants import ArtworkStatus
 from ..serializers import ArtworkSerializer
-
+from rest_framework import permissions
 logger = logging.getLogger(__name__)
 
 
 class ArtworkChunkViewSet(AuthenticatedGenericViewSet):
-    throttle_classes = [UserThrottle]
-    throttle_view = RateLimitView.UPLOAD_ARTWORK_CHUNK
+    permission_classes = [permissions.AllowAny]
+    # throttle_classes = [UserThrottle]
+    # throttle_view = RateLimitView.UPLOAD_ARTWORK_CHUNK
     serializer_class = ArtworkSerializer
     queryset = Artwork.objects.all().select_related("owner").order_by('-create_time')
 

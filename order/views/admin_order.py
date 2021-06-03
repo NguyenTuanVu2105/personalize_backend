@@ -77,7 +77,7 @@ class AdminOrderViewSet(SearchableListModelMixin,
 
     @action(methods=['POST'], detail=True, url_path='update_deliver')
     def update_deliver(self, request, *args, **kwargs):
-        order = self.get_object()
+        order = Order.objects.get(id=kwargs['pk'])
         order.deliver = is_all_deliver_order(order)
         order.save()
         return Response({"success": True})

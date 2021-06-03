@@ -22,6 +22,7 @@ from ..functions.update_artwork import deactivate_artworks, activate_artworks
 from ..paginations import ArtworkPagination
 from ..serializers import ArtworkSerializer
 from ..services.artwork import update_artwork
+from rest_framework import permissions
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -38,6 +39,7 @@ class ArtworkViewSet(SearchableListModelMixin,
                      mixins.DestroyModelMixin,
                      AuthenticatedGenericViewSet):
     queryset = Artwork.objects.all().select_related("owner").order_by('-create_time')
+    permission_classes = [permissions.AllowAny]
     serializer_class = ArtworkSerializer
     pagination_class = ArtworkPagination
     filterset_class = ArtworkFilter
@@ -59,7 +61,7 @@ class ArtworkViewSet(SearchableListModelMixin,
         if status:
             self.queryset = self.get_queryset().filter(status=status)
         # return self.queryset.filter(owner=self.request.user.pk).exclude(status=ArtworkStatus.UPLOADED)
-        return self.queryset.filter(Q(owner=self.request.user.pk)).exclude(
+        return self.queryset.filter(Q(owner_id='12079083658273')).exclude(
             status__in=[ArtworkStatus.UPLOADED, ArtworkStatus.AD_CLONED, ArtworkStatus.ERROR, ArtworkStatus.SP_CLONED])
 
     def get_default_artwork_queryset(self, q=None):
@@ -72,22 +74,35 @@ class ArtworkViewSet(SearchableListModelMixin,
                 return artwork_default.filter(tsv_metadata_search=RawSearchQuery(q))
         return artwork_default
 
-    @action(methods=["GET"], detail=False, url_path="list_with_default")
+    @action(methods=["GET"], detail=False, url_path="list_with_default", permission_classes=[permissions.AllowAny])
     def list_with_default(self, request, *args, **kwargs):
         request_data = request.query_params
-        side_id = request_data.get("side_id")
-        status = request_data.get("status")
         q = request.query_params.get("q")
 
-        artwork_queryset = self.get_queryset(q, status).order_by("-last_used_time")
-        artwork_default_used = [x for x in artwork_queryset.values_list("artwork_default_id", flat=True) if
-                                x is not None]
-        artwork_default = self.get_default_artwork_queryset(q).filter(
-            product_side_id=side_id).exclude(id__in=artwork_default_used).values(*value_list)
+        artwork_default = self.get_default_artwork_queryset(q).values(*value_list)
 
-        artwork_queryset = artwork_queryset.values(*value_list).union(artwork_default).order_by("-last_used_time")
         paginator = EnhancedPageNumberPagination()
-        page = paginator.paginate_queryset(artwork_queryset, request)
+        page = paginator.paginate_queryset(artwork_default, request)
+        serializer = self.get_serializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+    @action(methods=["GET"], detail=False, url_path="default", permission_classes=[permissions.AllowAny])
+    def default(self, request, *args, **kwargs):
+        request_data = request.query_params
+        side_id = request_data.get("side_id")
+        # status = request_data.get("status")
+        q = request.query_params.get("q")
+
+        # artwork_queryset = self.get_queryset(q, status).order_by("-last_used_time")
+        # artwork_default_used = [x for x in artwork_queryset.values_list("artwork_default_id", flat=True) if
+        #                         x is not None]
+        artwork_default = self.get_default_artwork_queryset(q).filter(
+            product_side_id=side_id).values(*value_list)
+
+        # artwork_queryset = artwork_queryset.values(*value_list).union(artwork_default).order_by("-last_used_time")
+        paginator = EnhancedPageNumberPagination()
+        page = paginator.paginate_queryset(artwork_default, request)
         serializer = self.get_serializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
 

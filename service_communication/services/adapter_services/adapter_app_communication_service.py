@@ -16,6 +16,7 @@ class AdapterAppCommunicationService(AdapterBaseCommunicationService):
         RequestType.ADAPTER_INIT_APP: "{}/app/hub/init".format(HOST),
         RequestType.ADAPTER_UNINSTALL_APP: "{}/app/hub/uninstall".format(HOST),
         RequestType.ADAPTER_POST_INIT_APP: "{}/app/hub/post-init".format(HOST),
+        RequestType.ADAPTER_CREATE_CUSTOMIZE_PAGE: "{}/page/hub/create".format(HOST)
     }
     webhook_job_service = WebhookJobService(queue_id=WebhookJobQueueID.ADAPTER_APP)
 
@@ -43,3 +44,10 @@ class AdapterAppCommunicationService(AdapterBaseCommunicationService):
                                url=cls.ENDPOINTS[request_type],
                                data=req_data,
                                headers={})
+
+    @classmethod
+    def create_customize_page(cls, shop):
+        req_data = MerchantServiceShopSerializer(shop).data
+        request_type = RequestType.ADAPTER_CREATE_CUSTOMIZE_PAGE
+        resp = cls.request_and_log(request_type, shop, RequestMethod.POST, cls.ENDPOINTS[request_type], req_data, {})
+        return resp.json()

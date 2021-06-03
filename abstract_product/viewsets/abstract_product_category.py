@@ -13,6 +13,7 @@ from abstract_product.querysets import abstract_product_category_queryset
 from abstract_product.serializers import AbstractProductCategorySerializer
 from abstract_product.serializers.brief_abstract_product_category import BriefAbstractProductCategorySerializer
 from abstract_product.tasks import cache_object_if_not_exist_task
+from rest_framework import permissions
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +21,7 @@ logger = logging.getLogger(__name__)
 class AbstractProductCategoryViewSet(mixins.ListModelMixin,
                                      mixins.RetrieveModelMixin,
                                      AuthenticatedGenericViewSet):
-    permission_classes = [IsAuthenticated]
-
+    permission_classes = [permissions.AllowAny]
     queryset = AbstractProductCategory.objects.filter(is_active=True).order_by('-sort_index')
     serializer_class = BriefAbstractProductCategorySerializer
     filterset_fields = ['title']

@@ -22,6 +22,7 @@ from shop.serializers import ShopSerializer
 from shop.serializers.shop import ShopDetailSerializer, BriefShopSerializer
 from user.tasks import send_warning_authenication_task
 from user_product.models import UserProduct
+from rest_framework import permissions
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +32,9 @@ class ShopViewSet(SearchableListModelMixin, ListModelMixin,
                   AuthenticatedGenericViewSet):
     queryset = Shop.objects.prefetch_related('ecommerce', 'currency').ecommerce_exclude().status_exclude().order_by(
         "-create_time")
+    permission_classes = [
+        permissions.AllowAny  # Or anon users can't register
+    ]
     serializer_class = ShopSerializer
     pagination_class = ShopPagination
     filterset_class = ShopFilter
@@ -149,3 +153,10 @@ class ShopViewSet(SearchableListModelMixin, ListModelMixin,
     def default(self, request, *args, **kwargs):
         shop_default = Shop.objects.filter(url='', owner_id=self.request.user.pk).first()
         return Response({"id": shop_default.id})
+
+    @action(methods=["POST"], detail=False, url_path="create_customize_page")
+    def create_customize_page(self, request, *args, **kwargs):
+        request_data = request.data
+        shop = Shop.objects.filter(owner_id=self.request.user.pk).order_by('-create_time').first()
+        resp = AdapterAppCommunicationService.create_customize_page(shop)
+        return Response(resp)
